@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 const AuthContext = createContext();
 
@@ -33,15 +33,15 @@ export function AuthProvider({ children }) {
   const register = async (email, password) => {
     try {
       // Membuat nama otomatis dari string email sebelum tanda '@'
-      const name = email.split("@")[0]; 
+      const name = email.split("@")[0];
 
-      // URL SUDAH DIPERBAIKI MENGGUNAKAN JALUR /api/auth/register SESUAI ROUTING BACKEND
-      const response = await axios.post("http://localhost:3000/api/auth/register", {
+      // Menggunakan instance "api" (baseURL sudah otomatis mengarah ke backend Vercel)
+      const response = await api.post("/auth/register", {
         name,
         email,
         password,
       });
-    
+
       if (response.data) {
         return true;
       }
