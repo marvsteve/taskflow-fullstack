@@ -81,3 +81,4 @@ export const loginUser = async (email, password) => {
     };
 
 };
+module.exports = { registerUser, loginUser };
