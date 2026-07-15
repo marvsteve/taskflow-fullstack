@@ -1,5 +1,5 @@
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
+const mysql = require('mysql2/promise');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -21,4 +21,4 @@ if (process.env.DATABASE_URL) {
   });
 }
 
-export default pool;
+module.exports = pool;
