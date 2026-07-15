@@ -53,7 +53,8 @@ app.get('/', (req, res) => {
 // ==========================================
 // 4. IMPORT & DAFTAR ROUTE APLIKASI
 // ==========================================
-const authRoutes = require('./routes/authRoutes'); 
+const path = require('path');
+const authRoutes = require(path.join(__dirname, 'routes', 'authRoutes'));
 app.use('/api/auth', authRoutes);
 
 
