@@ -53,10 +53,8 @@ app.get('/', (req, res) => {
 // ==========================================
 // 4. IMPORT & DAFTAR ROUTE APLIKASI
 // ==========================================
-// Sesuaikan dengan file route yang kamu miliki di folder routes kamu
-// Contoh:
-// const authRoutes = require('./routes/authRoutes');
-// app.use('/api/auth', authRoutes);
+const authRoutes = require('./routes/authRoutes'); 
+app.use('/api/auth', authRoutes);
 
 
 // ==========================================
