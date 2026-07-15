@@ -87,3 +87,4 @@ try {
 app.listen(PORT, () => {
   console.log(`🚀 Server berjalan dengan aman pada port: ${PORT}`);
 });
+module.exports = app;
