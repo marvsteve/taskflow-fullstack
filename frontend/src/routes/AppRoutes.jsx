@@ -4,7 +4,7 @@ import DashboardLayout from "../layouts/DashboardLayout"; // Diubah ke Dashboard
 import Dashboard from "../pages/Dashboard";
 import Tasks from "../pages/Tasks";
 import Categories from "../pages/Categories";
-import Login from "../pages/login"; 
+import Login from "../pages/Login"; 
 import Register from "../pages/Register"; 
 import { useAuth } from "../contexts/AuthContext";
 import Landing from "../pages/Landing";
