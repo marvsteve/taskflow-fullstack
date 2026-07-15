@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import MainLayout from "../layouts/MainLayout";
+import DashboardLayout from "../layouts/DashboardLayout"; // Diubah ke DashboardLayout
 import Dashboard from "../pages/Dashboard";
 import Tasks from "../pages/Tasks";
 import Categories from "../pages/Categories";
@@ -37,8 +37,9 @@ const AppRoutes = () => {
       />
 
       {/* RUTE OPERASIONAL UTAMA */}
+      {/* Diubah untuk menggunakan DashboardLayout */}
       <Route 
-        element={user ? <MainLayout /> : <Navigate to="/" replace />}
+        element={user ? <DashboardLayout /> : <Navigate to="/" replace />}
       >
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tasks" element={<Tasks />} />
