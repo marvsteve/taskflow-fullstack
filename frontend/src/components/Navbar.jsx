@@ -5,20 +5,19 @@ const Navbar = ({ onMenuClick }) => {
   const [activeUser, setActiveUser] = useState("Administrator");
 
   useEffect(() => {
-    // 1. Ambil data dari localStorage
     const savedUser = localStorage.getItem("user");
-    
+
     if (savedUser) {
-      // 2. Bersihkan tanda kutip ganda berlebih dari browser jika ada (""aira@gmail.com"" -> aira@gmail.com)
-      let cleanEmail = savedUser.replace(/^"|"$/g, '');
-      
-      // 3. Jika berbentuk email, potong agar hanya mengambil nama depannya saja
-      if (cleanEmail.includes("@")) {
-        const namePart = cleanEmail.split("@")[0];
-        // Ubah huruf pertama menjadi Kapital (aira -> Aira)
-        setActiveUser(namePart.charAt(0).toUpperCase() + namePart.slice(1));
-      } else {
-        setActiveUser(cleanEmail);
+      try {
+        // "user" di localStorage sekarang berbentuk objek: {"id":9,"name":"kirana","email":"..."}
+        const parsedUser = JSON.parse(savedUser);
+        const displayName =
+          parsedUser?.name || parsedUser?.email?.split("@")[0] || "Administrator";
+
+        // Kapitalisasi huruf pertama biar rapi (kirana -> Kirana)
+        setActiveUser(displayName.charAt(0).toUpperCase() + displayName.slice(1));
+      } catch (err) {
+        setActiveUser("Administrator");
       }
     }
   }, []);
