@@ -22,7 +22,9 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const login = (userData, jwtToken) => {
+  // Helper internal: menyimpan sesi ke localStorage & state.
+  // HANYA dipanggil setelah backend benar-benar mengonfirmasi kredensial valid.
+  const setSession = (userData, jwtToken) => {
     localStorage.setItem("token", jwtToken);
     localStorage.setItem("user", JSON.stringify(userData));
 
@@ -30,29 +32,30 @@ export function AuthProvider({ children }) {
     setToken(jwtToken);
   };
 
+  // Sekarang benar-benar memanggil backend untuk verifikasi email & password
+  const login = async (email, password) => {
+    const response = await api.post("/auth/login", { email, password });
+    const { token: jwtToken, user: userData } = response.data.data;
+
+    setSession(userData, jwtToken);
+  };
+
   const register = async (email, password) => {
-    try {
-      // Membuat nama otomatis dari string email sebelum tanda '@'
-      const name = email.split("@")[0];
+    const name = email.split("@")[0];
 
-      const response = await api.post("/auth/register", {
-        name,
-        email,
-        password,
-      });
+    const response = await api.post("/auth/register", {
+      name,
+      email,
+      password,
+    });
 
-      // Backend sekarang mengembalikan { success, data: { token, user } }
-      const { token: jwtToken, user: userData } = response.data.data;
+    const { token: jwtToken, user: userData } = response.data.data;
 
-      if (jwtToken) {
-        // Langsung "login"-kan user yang baru daftar, sama seperti alur login biasa
-        login(userData, jwtToken);
-      }
-
-      return true;
-    } catch (error) {
-      throw error;
+    if (jwtToken) {
+      setSession(userData, jwtToken);
     }
+
+    return true;
   };
 
   const logout = () => {
