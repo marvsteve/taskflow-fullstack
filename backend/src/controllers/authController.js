@@ -1,5 +1,4 @@
-// Gunakan require, bukan import!
-const { registerUser, loginUser } = require("../services/authservice");
+import { registerUser, loginUser } from "../services/authservice.js";
 
 const register = async (req, res) => {
     try {
@@ -36,5 +35,4 @@ const login = async (req, res) => {
     }
 };
 
-// Ekspor menggunakan CommonJS
-module.exports = { register, login };
+export { register, login };

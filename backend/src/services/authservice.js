@@ -1,8 +1,8 @@
-const jwt = require("jsonwebtoken");
-const pool = require("../config/database.js");
-const bcrypt = require("bcrypt");
+import jwt from "jsonwebtoken";
+import pool from "../config/database.js";
+import bcrypt from "bcrypt";
 
-const registerUser = async (user) => {
+export const registerUser = async (user) => {
     const { name, email, password } = user;
 
     const [existingUser] = await pool.query(
@@ -24,7 +24,7 @@ const registerUser = async (user) => {
     return { id: result.insertId, name, email };
 };
 
-const loginUser = async (email, password) => {
+export const loginUser = async (email, password) => {
     const [users] = await pool.query(
         "SELECT * FROM users WHERE email = ?",
         [email]
@@ -52,5 +52,3 @@ const loginUser = async (email, password) => {
         user: { id: user.id, name: user.name, email: user.email }
     };
 };
-
-module.exports = { registerUser, loginUser };
