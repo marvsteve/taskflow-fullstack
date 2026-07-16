@@ -35,16 +35,21 @@ export function AuthProvider({ children }) {
       // Membuat nama otomatis dari string email sebelum tanda '@'
       const name = email.split("@")[0];
 
-      // Menggunakan instance "api" (baseURL sudah otomatis mengarah ke backend Vercel)
       const response = await api.post("/auth/register", {
         name,
         email,
         password,
       });
 
-      if (response.data) {
-        return true;
+      // Backend sekarang mengembalikan { success, data: { token, user } }
+      const { token: jwtToken, user: userData } = response.data.data;
+
+      if (jwtToken) {
+        // Langsung "login"-kan user yang baru daftar, sama seperti alur login biasa
+        login(userData, jwtToken);
       }
+
+      return true;
     } catch (error) {
       throw error;
     }

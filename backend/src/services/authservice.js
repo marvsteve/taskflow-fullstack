@@ -21,7 +21,17 @@ export const registerUser = async (user) => {
         [name, email, hashedPassword]
     );
 
-    return { id: result.insertId, name, email };
+    // Generate token langsung setelah register, supaya user otomatis "login"
+    const token = jwt.sign(
+        { id: result.insertId, email },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+    );
+
+    return {
+        token,
+        user: { id: result.insertId, name, email }
+    };
 };
 
 export const loginUser = async (email, password) => {
