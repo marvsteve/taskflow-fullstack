@@ -1,72 +1,87 @@
-const express = require('express');
-const cors = require('cors');
-const mysql = require('mysql2/promise');
-require('dotenv').config();
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+
+import authRoutes from "./routes/authRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// ==========================================
-// 1. KONFIGURASI CORS (MENGIZINKAN NETLIFY)
-// ==========================================
-app.use(cors({
-  origin: '*', // Mengizinkan semua domain (termasuk Netlify kamu) untuk mengakses backend
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// ========================
+// MIDDLEWARE
+// ========================
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      process.env.FRONTEND_URL,
+    ].filter(Boolean),
+    credentials: true,
+  })
+);
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// ==========================================
-// 2. KONEKSI DATABASE (MYSQL AIVEN)
-// ==========================================
-const pool = mysql.createPool({
-  uri: process.env.DATABASE_URL,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+// ========================
+// ROUTES
+// ========================
 
-// Cek Koneksi Database
-(async () => {
-  try {
-    const connection = await pool.getConnection();
-    console.log("✅ Database MySQL berhasil terhubung dengan aman!");
-    connection.release();
-  } catch (err) {
-    console.error("❌ Database gagal terhubung. Periksa konfigurasi URL Database Anda.");
-    console.error(err.message);
-  }
-})();
-
-// ==========================================
-// 3. ROUTE UTAMA & TESTING
-// ==========================================
-// Ini ditambahkan agar Vercel tidak memunculkan error 404 saat halaman utama backend dibuka
-app.get('/', (req, res) => {
-  res.status(200).json({
-    message: "Server TaskFlow Backend berjalan dengan sukses secara online!",
-    status: "Connected"
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "TaskFlow Backend Running 🚀",
   });
 });
 
-// ==========================================
-// 4. IMPORT & DAFTAR ROUTE APLIKASI
-// ==========================================
-const path = require('path');
-const authRoutes = require(path.join(__dirname, 'routes', 'authRoutes'));
-app.use('/api/auth', authRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/categories", categoryRoutes);
 
+// ========================
+// 404
+// ========================
 
-// ==========================================
-// 5. MENJALANKAN SERVER
-// ==========================================
-// Tetap menggunakan app.listen untuk lokal, namun Vercel akan otomatis membypass ini
-if (process.env.NODE_ENV !== 'production') {
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Endpoint tidak ditemukan",
+  });
+});
+
+// ========================
+// ERROR HANDLER
+// ========================
+
+app.use((err, req, res, next) => {
+  console.error(err);
+
+  res.status(500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
+
+// ========================
+// LOCALHOST
+// ========================
+
+const PORT = process.env.PORT || 3000;
+
+if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => {
-    console.log(`Server berjalan dengan aman pada port: ${PORT}`);
+    console.log(`Server berjalan di http://localhost:${PORT}`);
   });
 }
 
-// WAJIB ditaruh di paling bawah untuk kebutuhan deploy Vercel serverless
-module.exports = app;
+// ========================
+// VERCEL
+// ========================
+
+export default app;
